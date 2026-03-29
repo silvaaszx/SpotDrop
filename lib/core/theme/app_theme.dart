@@ -200,7 +200,6 @@ abstract final class AppTheme {
           ),
           textStyle: const TextStyle(
             fontFamily: 'Inter',
-            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
