@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spot_drop/core/theme/app_theme.dart';
 import 'package:spot_drop/core/widgets/premium_widgets.dart';
 import 'package:spot_drop/features/tasks/domain/entities/geofence_task.dart';
-import 'package:spot_drop/features/tasks/presentation/bloc/task_list_bloc.dart';
 import 'package:spot_drop/features/tasks/presentation/screens/home_screen.dart';
 import 'package:spot_drop/features/tasks/presentation/screens/map_overview_screen.dart';
 import 'package:spot_drop/features/tasks/presentation/screens/settings_screen.dart';

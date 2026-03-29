@@ -108,14 +108,22 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
               // ─── Search Overlay ───
               Positioned(
                 top: MediaQuery.of(context).padding.top + AppSpacing.md,
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                child: _SearchOverlay(
-                  controller: _searchController,
-                  onSearch: _onSearch,
-                  isSearching: state.status == CreateTaskStatus.searching,
-                ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.5),
-              ),
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      child: _SearchOverlay(
+                        controller: _searchController,
+                        onSearch: _onSearch,
+                        isSearching: state.status == CreateTaskStatus.searching,
+                      ),
+                    ),
+                  ),
+                ),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.5),
 
               // ─── Centre Pin ───
               const Positioned.fill(
@@ -134,16 +142,21 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: _CreateTaskBottomPanel(
-                  state: state,
-                  titleController: _titleController,
-                  descController: _descController,
-                  onTitleChanged: cubit.updateTitle,
-                  onDescChanged: cubit.updateDescription,
-                  onRadiusChanged: cubit.updateRadius,
-                  onSave: cubit.save,
-                ).animate().fadeIn().slideY(begin: 0.3, curve: Curves.easeOutCubic),
-              ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: _CreateTaskBottomPanel(
+                      state: state,
+                      titleController: _titleController,
+                      descController: _descController,
+                      onTitleChanged: cubit.updateTitle,
+                      onDescChanged: cubit.updateDescription,
+                      onRadiusChanged: cubit.updateRadius,
+                      onSave: cubit.save,
+                    ),
+                  ),
+                ),
+              ).animate().fadeIn().slideY(begin: 0.3, curve: Curves.easeOutCubic),
 
               // ─── Close Button ───
               Positioned(
@@ -212,35 +225,38 @@ class _MapPin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            gradient: AppColors.primaryGradient,
-            shape: BoxShape.circle,
-            boxShadow: AppShadows.glow,
-            border: Border.all(color: Colors.white24, width: 2),
+    return Semantics(
+      label: 'Selected location marker on center of map',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              shape: BoxShape.circle,
+              boxShadow: AppShadows.glow,
+              border: Border.all(color: Colors.white24, width: 2),
+            ),
+            child: const Icon(
+              Icons.location_on_rounded,
+              color: AppColors.scaffoldDark,
+              size: 24,
+            ),
+          ).animate(onPlay: (c) => c.repeat(reverse: true))
+           .scale(duration: 1.seconds, begin: const Offset(1, 1), end: const Offset(1.1, 1.1))
+           .shimmer(delay: 2.seconds),
+          Container(
+            width: 4,
+            height: 12,
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(2)),
+            ),
           ),
-          child: const Icon(
-            Icons.location_on_rounded,
-            color: AppColors.scaffoldDark,
-            size: 24,
-          ),
-        ).animate(onPlay: (c) => c.repeat(reverse: true))
-         .scale(duration: 1.seconds, begin: const Offset(1, 1), end: const Offset(1.1, 1.1))
-         .shimmer(delay: 2.seconds),
-        Container(
-          width: 4,
-          height: 12,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(2)),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

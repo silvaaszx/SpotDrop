@@ -23,37 +23,43 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(gradient: AppColors.surfaceGradient),
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ─── Header ───
-              _HomeHeader(onCreateTask: onCreateTask),
-
-              // ─── Task list ───
-              Expanded(
-                child: BlocBuilder<TaskListBloc, TaskListState>(
-                  builder: (context, state) {
-                    return switch (state) {
-                      TaskListInitial() ||
-                      TaskListLoading() =>
-                        _LoadingState(),
-                      TaskListError(message: final msg) => _ErrorState(message: msg),
-                      TaskListLoaded() => state.tasks.isEmpty
-                          ? _EmptyState(onCreateTask: onCreateTask)
-                          : _TaskListView(
-                              state: state,
-                              onTaskTap: onTaskTap,
-                            ),
-                    };
-                  },
-                ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ─── Header ───
+                  _HomeHeader(onCreateTask: onCreateTask),
+    
+                  // ─── Task list ───
+                  Expanded(
+                    child: BlocBuilder<TaskListBloc, TaskListState>(
+                      builder: (context, state) {
+                        return switch (state) {
+                          TaskListInitial() ||
+                          TaskListLoading() =>
+                            _LoadingState(),
+                          TaskListError(message: final msg) => _ErrorState(message: msg),
+                          TaskListLoaded() => state.tasks.isEmpty
+                              ? _EmptyState(onCreateTask: onCreateTask)
+                              : _TaskListView(
+                                  state: state,
+                                  onTaskTap: onTaskTap,
+                                ),
+                        };
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: onCreateTask,
+        tooltip: 'Create a new location reminder',
         icon: const Icon(Icons.add_location_alt_rounded),
         label: const Text('New Reminder'),
       ).animate().scale(delay: 400.ms, curve: Curves.easeOutBack),
@@ -225,22 +231,25 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = isCompleted ? AppColors.textMuted : AppColors.textPrimary;
     
-    return Row(
-      children: [
-        Text(
-          title.toUpperCase(),
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: color,
-                letterSpacing: 1.5,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const Spacer(),
-        Text(
-          '$count',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
-        ),
-      ],
+    return Semantics(
+      header: true,
+      child: Row(
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: color,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const Spacer(),
+          Text(
+            '$count',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -279,76 +288,81 @@ class _TaskCard extends StatelessWidget {
             return true;
           }
         },
-        child: GestureDetector(
+        child: Semantics(
+          label: 'Task: ${task.title}. ${task.isCompleted ? "Completed" : "Pending"}. Radius: ${task.radius.round()} meters.',
+          button: true,
           onTap: onTap,
-          child: GlassCard(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            color: task.isCompleted 
-                ? AppColors.glassBase.withOpacity(0.1)
-                : AppColors.glassBase,
-            border: Border.all(
-              color: task.isCompleted
-                  ? AppColors.glassBorder.withOpacity(0.05)
-                  : AppColors.glassBorder,
-            ),
-            child: Row(
-              children: [
-                // Icon
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: task.isCompleted
-                        ? AppColors.textMuted.withOpacity(0.1)
-                        : AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
+          child: GestureDetector(
+            onTap: onTap,
+            child: GlassCard(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              color: task.isCompleted 
+                  ? AppColors.glassBase.withValues(alpha: 0.1)
+                  : AppColors.glassBase,
+              border: Border.all(
+                color: task.isCompleted
+                    ? AppColors.glassBorder.withValues(alpha: 0.05)
+                    : AppColors.glassBorder,
+              ),
+              child: Row(
+                children: [
+                  // Icon
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: task.isCompleted
+                          ? AppColors.textMuted.withValues(alpha: 0.1)
+                          : AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: Icon(
+                      task.isCompleted ? Icons.check_circle_outline : Icons.radar_rounded,
+                      color: task.isCompleted ? AppColors.textMuted : AppColors.primary,
+                      size: 26,
+                    ),
                   ),
-                  child: Icon(
-                    task.isCompleted ? Icons.check_circle_outline : Icons.radar_rounded,
-                    color: task.isCompleted ? AppColors.textMuted : AppColors.primary,
-                    size: 26,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                
-                // Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        task.title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                              color: task.isCompleted ? AppColors.textMuted : null,
+                  const SizedBox(width: AppSpacing.md),
+                  
+                  // Content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task.title,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                                color: task.isCompleted ? AppColors.textMuted : null,
+                              ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(Icons.near_me_rounded, size: 12, color: AppColors.textMuted),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${task.radius.round()}m radius',
+                              style: Theme.of(context).textTheme.labelSmall,
                             ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.near_me_rounded, size: 12, color: AppColors.textMuted),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${task.radius.round()}m radius',
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text('•', style: TextStyle(color: AppColors.textMuted)),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            dateFormat.format(task.createdAt),
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: AppSpacing.sm),
+                            const Text('•', style: TextStyle(color: AppColors.textMuted)),
+                            const SizedBox(width: AppSpacing.sm),
+                            Text(
+                              dateFormat.format(task.createdAt),
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                
-                Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 20),
-              ],
+                  
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 20),
+                ],
+              ),
             ),
           ),
         ),

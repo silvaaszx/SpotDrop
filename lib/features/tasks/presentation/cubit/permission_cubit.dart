@@ -47,8 +47,6 @@ class PermissionCubit extends Cubit<PermissionState> {
   Future<void> checkInitialStatus() async {
     final locationWhenInUse = await Permission.locationWhenInUse.status;
     final locationAlways = await Permission.locationAlways.status;
-    final notification = await Permission.notification.status;
-
     if (locationWhenInUse.isGranted && locationAlways.isGranted) {
       emit(state.copyWith(step: PermissionStep.granted));
     }
