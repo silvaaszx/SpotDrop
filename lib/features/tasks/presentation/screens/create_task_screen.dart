@@ -65,44 +65,37 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
           body: Stack(
             children: [
               // ─── Map ───
-              FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: state.center,
-                  initialZoom: 15,
-                  onPositionChanged: (pos, hasGesture) {
-                    if (hasGesture) {
-                      cubit.updateCenter(pos.center);
-                    }
-                  },
-                ),
-                children: [
-                  TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.spotdrop.app',
-                    tileBuilder: (context, tileWidget, tile) {
-                      return ColorFiltered(
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.scaffoldDark,
-                          BlendMode.saturation,
-                        ),
-                        child: tileWidget,
-                      );
+              Positioned.fill(
+                child: FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter: state.center,
+                    initialZoom: 15,
+                    onPositionChanged: (pos, hasGesture) {
+                      if (hasGesture) {
+                        cubit.updateCenter(pos.center);
+                      }
                     },
                   ),
-                  CircleLayer(
-                    circles: [
-                      CircleMarker(
-                        point: state.center,
-                        radius: state.radiusMeters,
-                        useRadiusInMeter: true,
-                        color: AppColors.geofenceCircleFill,
-                        borderColor: AppColors.geofenceCircleStroke,
-                        borderStrokeWidth: 2,
-                      ),
-                    ],
-                  ),
-                ],
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.spotdrop.app',
+                    ),
+                    CircleLayer(
+                      circles: [
+                        CircleMarker(
+                          point: state.center,
+                          radius: state.radiusMeters,
+                          useRadiusInMeter: true,
+                          color: AppColors.geofenceCircleFill,
+                          borderColor: AppColors.geofenceCircleStroke,
+                          borderStrokeWidth: 2,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
               // ─── Search Overlay ───

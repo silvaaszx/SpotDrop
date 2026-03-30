@@ -21,64 +21,57 @@ class MapOverviewScreen extends StatelessWidget {
         return Scaffold(
           body: Stack(
             children: [
-              FlutterMap(
-                options: const MapOptions(
-                  initialCenter: LatLng(-23.5505, -46.6333),
-                  initialZoom: 12,
+              Positioned.fill(
+                child: FlutterMap(
+                  options: const MapOptions(
+                    initialCenter: LatLng(-23.5505, -46.6333),
+                    initialZoom: 12,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.spotdrop.app',
+                    ),
+                    CircleLayer(
+                      circles: tasks.map((t) => CircleMarker(
+                        point: LatLng(t.latitude, t.longitude),
+                        radius: t.radius,
+                        useRadiusInMeter: true,
+                        color: t.isCompleted 
+                            ? Colors.grey.withOpacity(0.1) 
+                            : AppColors.geofenceCircleFill,
+                        borderColor: t.isCompleted
+                            ? Colors.grey.withOpacity(0.2)
+                            : AppColors.geofenceCircleStroke,
+                        borderStrokeWidth: 1,
+                      )).toList(),
+                    ),
+                    MarkerLayer(
+                      markers: tasks.map((t) => Marker(
+                        point: LatLng(t.latitude, t.longitude),
+                        width: 40,
+                        height: 40,
+                        child: GestureDetector(
+                          onTap: () => onTaskTap(t),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: t.isCompleted ? null : AppColors.primaryGradient,
+                              color: t.isCompleted ? Colors.grey : null,
+                              shape: BoxShape.circle,
+                              boxShadow: t.isCompleted ? null : AppShadows.glow,
+                              border: Border.all(color: Colors.white24, width: 1.5),
+                            ),
+                            child: Icon(
+                              t.isCompleted ? Icons.check_rounded : Icons.location_on_rounded,
+                              color: AppColors.scaffoldDark,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      )).toList(),
+                    ),
+                  ],
                 ),
-                children: [
-                  TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.spotdrop.app',
-                    tileBuilder: (context, tileWidget, tile) {
-                      return ColorFiltered(
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.scaffoldDark,
-                          BlendMode.saturation,
-                        ),
-                        child: tileWidget,
-                      );
-                    },
-                  ),
-                  CircleLayer(
-                    circles: tasks.map((t) => CircleMarker(
-                      point: LatLng(t.latitude, t.longitude),
-                      radius: t.radius,
-                      useRadiusInMeter: true,
-                      color: t.isCompleted 
-                          ? Colors.grey.withOpacity(0.1) 
-                          : AppColors.geofenceCircleFill,
-                      borderColor: t.isCompleted
-                          ? Colors.grey.withOpacity(0.2)
-                          : AppColors.geofenceCircleStroke,
-                      borderStrokeWidth: 1,
-                    )).toList(),
-                  ),
-                  MarkerLayer(
-                    markers: tasks.map((t) => Marker(
-                      point: LatLng(t.latitude, t.longitude),
-                      width: 40,
-                      height: 40,
-                      child: GestureDetector(
-                        onTap: () => onTaskTap(t),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: t.isCompleted ? null : AppColors.primaryGradient,
-                            color: t.isCompleted ? Colors.grey : null,
-                            shape: BoxShape.circle,
-                            boxShadow: t.isCompleted ? null : AppShadows.glow,
-                            border: Border.all(color: Colors.white24, width: 1.5),
-                          ),
-                          child: Icon(
-                            t.isCompleted ? Icons.check_rounded : Icons.location_on_rounded,
-                            color: AppColors.scaffoldDark,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    )).toList(),
-                  ),
-                ],
               ),
               
               // Header

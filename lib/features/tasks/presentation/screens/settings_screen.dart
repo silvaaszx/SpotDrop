@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:spot_drop/core/theme/app_theme.dart';
 import 'package:spot_drop/core/widgets/premium_widgets.dart';
+import 'package:spot_drop/features/tasks/presentation/screens/settings_sub_screens.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -22,7 +23,10 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.notifications_active_rounded,
                 title: 'Notification Channels',
                 subtitle: 'Manage how alerts are delivered',
-                onTap: () {},
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const NotificationSettingsScreen()),
+                ),
               ).animate().fadeIn().slideY(begin: 0.1),
               
               const SizedBox(height: AppSpacing.md),
@@ -31,7 +35,10 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.shield_rounded,
                 title: 'Privacy & Permissions',
                 subtitle: 'Check location and background status',
-                onTap: () {},
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PrivacyPermissionsScreen()),
+                ),
               ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
               
               const SizedBox(height: AppSpacing.md),
@@ -40,7 +47,25 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.auto_delete_rounded,
                 title: 'Cleanup History',
                 subtitle: 'Remove all completed reminders',
-                onTap: () {},
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Cleanup History?'),
+                      content: const Text('This will remove all completed reminders forever.'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                        TextButton(
+                          onPressed: () {
+                            // Logic for clearing completed tasks
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Clear All', style: TextStyle(color: AppColors.error)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
               
               const SizedBox(height: AppSpacing.xxl),

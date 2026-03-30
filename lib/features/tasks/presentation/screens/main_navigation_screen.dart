@@ -32,6 +32,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _screens = [
       HomeScreen(onCreateTask: widget.onCreateTask, onTaskTap: widget.onTaskTap),
       MapOverviewScreen(onTaskTap: widget.onTaskTap),
+      const _HistoryPlaceholder(), // Adding a quick history view
       const SettingsScreen(),
     ];
   }
@@ -46,36 +47,84 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
-          child: GlassCard(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            borderRadius: BorderRadius.circular(AppRadius.full),
-            blur: 20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavButton(
-                  icon: Icons.dashboard_rounded,
-                  label: 'Tasks',
-                  isActive: _currentIndex == 0,
-                  onTap: () => setState(() => _currentIndex = 0),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.lg),
+          child: Row(
+            children: [
+              Expanded(
+                child: GlassCard(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                  blur: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _NavButton(
+                        icon: Icons.dashboard_rounded,
+                        label: 'Tasks',
+                        isActive: _currentIndex == 0,
+                        onTap: () => setState(() => _currentIndex = 0),
+                      ),
+                      _NavButton(
+                        icon: Icons.map_rounded,
+                        label: 'Map',
+                        isActive: _currentIndex == 1,
+                        onTap: () => setState(() => _currentIndex = 1),
+                      ),
+                      
+                      const SizedBox(width: 48), // Space for FAB
+                      
+                      _NavButton(
+                        icon: Icons.history_rounded,
+                        label: 'History',
+                        isActive: _currentIndex == 2,
+                        onTap: () => setState(() => _currentIndex = 2),
+                      ),
+                      _NavButton(
+                        icon: Icons.settings_rounded,
+                        label: 'Settings',
+                        isActive: _currentIndex == 3,
+                        onTap: () => setState(() => _currentIndex = 3),
+                      ),
+                    ],
+                  ),
                 ),
-                _NavButton(
-                  icon: Icons.map_rounded,
-                  label: 'Map',
-                  isActive: _currentIndex == 1,
-                  onTap: () => setState(() => _currentIndex = 1),
-                ),
-                _NavButton(
-                  icon: Icons.settings_rounded,
-                  label: 'Settings',
-                  isActive: _currentIndex == 2,
-                  onTap: () => setState(() => _currentIndex = 2),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ).animate().slideY(begin: 1, duration: 600.ms, curve: Curves.easeOutQuint),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(top: 30),
+        child: FloatingActionButton(
+          onPressed: widget.onCreateTask,
+          elevation: 8,
+          backgroundColor: AppColors.primary,
+          shape: const CircleBorder(),
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: AppColors.primaryGradient,
+              boxShadow: AppShadows.glow,
+            ),
+            child: const Icon(Icons.add_location_alt_rounded, color: AppColors.scaffoldDark, size: 28),
+          ),
+        ).animate().scale(delay: 400.ms, curve: Curves.easeOutBack),
+      ),
+    );
+  }
+}
+
+class _HistoryPlaceholder extends StatelessWidget {
+  const _HistoryPlaceholder();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.surfaceGradient),
+        child: const Center(child: Text('Coming Soon: Detailed Travel History 🛰️')),
       ),
     );
   }

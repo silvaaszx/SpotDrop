@@ -57,12 +57,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: onCreateTask,
-        tooltip: 'Create a new location reminder',
-        icon: const Icon(Icons.add_location_alt_rounded),
-        label: const Text('New Reminder'),
-      ).animate().scale(delay: 400.ms, curve: Curves.easeOutBack),
     );
   }
 }
